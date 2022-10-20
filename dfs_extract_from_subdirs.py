@@ -7,11 +7,10 @@ import subprocess
 
 """All you have to do is change these 5 globals and run the file"""
 
-root = None
-dest = None
+root = '/mnt/c/Users/moses/OneDrive/Desktop/python_projects/official_transcriptions'
+dest = '/mnt/c/Users/moses/OneDrive/Desktop/python_projects/all_ot'
 fnames = None
 action = None
-flags = None
 
 ##########################################################################################################
 
@@ -33,7 +32,7 @@ class dfs_extractor:
         stack: a stack used for the DFS
         """
 
-    def __init__(self, root=None, dest=None, fnames=None, action="copy", flags = None):
+    def __init__(self, root=None, dest=None, fnames=None, action="copy"):
         """Initializes class parameters from given arguments"""
 
         # Sets root as current directory if no argument is given
@@ -62,8 +61,6 @@ class dfs_extractor:
         else:
             raise ValueError(f"Argument \"action\" takes as input \"copy\" or \"move\", not {action}")
 
-        self.flags = flags
-        
         self.stack = deque()
 
 
@@ -73,22 +70,20 @@ class dfs_extractor:
         def _recurse(curr_path):
             """Continues searching recursively"""
 
-            # Move all files matching wildcard expr. to dest directory
-            for exp in self.fnames:
-                try:
-                    if self.flags == None:
-                        subprocess.run(f"{self.action} {curr_path}/{exp} {self.dest}", check=True, shell=True)
-                    else:
-                        subprocess.run(f"{self.action} {self.flags} {curr_path}/{exp} {self.dest}", check=True, shell=True)
-                except subprocess.CalledProcessError as e:
-                    # If command fails (exit code other than 0), print error message and move on
-                    print(f"{e.cmd} failed with exit code {e.returncode}, please double check expression is valid.")
-                    continue
-            
             # Push all children onto stack
             for item in os.listdir(curr_path):
                 if isdir(item):
                     self.stack.append(curr_path + "/" + item)
+
+            # Move all files matching wildcard expr. to dest directory
+            for exp in self.fnames:
+                try:
+                    assert os.system(f"{self.action} {curr_path}/{exp} {self.dest}") == 0
+                except AssertionError:
+                    # If command fails (exit code other than 0), print error message and move on
+                    #print(f"{e.cmd} failed with exit code {e.returncode}, please double check expression is valid.")
+                    pass
+            
 
         self.stack.append(self.root)
 
