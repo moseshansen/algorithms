@@ -6,5 +6,6 @@ The following algorithms are included herein:
 1. The Extended Euclidean Algorithm
 2. Solver for Knapsack Problem
 3. Dynamic Programming Methods (for Fibonacci Sequence)
+4. Nested Directory File Extractor
 
 ...and many more to come.
